@@ -19,6 +19,12 @@
 @end
 
 #if TARGET_OS_TV
+extern volatile int gDiagGCMoves;
+extern volatile int gDiagGCDeltaX;
+extern volatile int gDiagUIKitMoves;
+extern volatile int gDiagLastX;
+extern volatile int gDiagLastY;
+
 @interface StreamView : UIView <X1KitMouseDelegate, UITextFieldDelegate>
 #else
 @interface StreamView : UIView <X1KitMouseDelegate, UITextFieldDelegate, UIPointerInteractionDelegate>

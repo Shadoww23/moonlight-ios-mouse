@@ -7,6 +7,7 @@
 //
 
 #import "ControllerSupport.h"
+#import "StreamView.h"
 #import "Controller.h"
 
 #import "OnScreenControls.h"
@@ -848,6 +849,7 @@ static const double MOUSE_SPEED_DIVISOR = 1.25;
 
 -(void) registerMouseCallbacks:(GCMouse*) mouse API_AVAILABLE(ios(14.0)) {
     mouse.mouseInput.mouseMovedHandler = ^(GCMouseInput * _Nonnull mouse, float deltaX, float deltaY) {
+        gDiagGCMoves++; gDiagGCDeltaX += (int)deltaX;
         self->accumulatedDeltaX += deltaX / MOUSE_SPEED_DIVISOR;
         self->accumulatedDeltaY += -deltaY / MOUSE_SPEED_DIVISOR;
         

@@ -15,6 +15,8 @@
 #import "AbsoluteTouchHandler.h"
 #import "KeyboardInputField.h"
 
+volatile int gDiagGCMoves, gDiagGCDeltaX, gDiagUIKitMoves, gDiagLastX, gDiagLastY;
+
 static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
 @implementation StreamView {
@@ -92,6 +94,21 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
     // but unfortunately that isn't possible today. GCMouse doesn't recognize many
     // mice correctly, but UIKit does. We will register for both and ignore UIKit
     // events if a GCMouse is connected.
+    {
+        UILabel *diag = [[UILabel alloc] initWithFrame:CGRectMake(8, 8, 330, 78)];
+        diag.numberOfLines = 4;
+        diag.font = [UIFont monospacedSystemFontOfSize:11 weight:UIFontWeightRegular];
+        diag.textColor = [UIColor greenColor];
+        diag.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.6];
+        diag.userInteractionEnabled = NO;
+        [self addSubview:diag];
+        [NSTimer scheduledTimerWithTimeInterval:0.25 repeats:YES block:^(NSTimer *t) {
+            if (@available(iOS 14.0, *)) {
+                diag.text = [NSString stringWithFormat:@"MOUSE DIAG\nGCMouse.mice=%lu  current=%d\nGC moves=%d  sumDX=%d\nUIKit moves=%d  last=(%d,%d)",
+                    (unsigned long)[GCMouse mice].count, [GCMouse current] != nil, gDiagGCMoves, gDiagGCDeltaX, gDiagUIKitMoves, gDiagLastX, gDiagLastY];
+            }
+        }];
+    }
     if (@available(iOS 13.4, *)) {
         [self addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
         
@@ -632,6 +649,7 @@ static const double X1_MOUSE_SPEED_DIVISOR = 2.5;
 
 #if !TARGET_OS_TV
 - (void) updateCursorLocation:(CGPoint)location isMouse:(BOOL)isMouse {
+    if (isMouse) { gDiagUIKitMoves++; gDiagLastX = (int)location.x; gDiagLastY = (int)location.y; }
     CGPoint normalizedLocation = [self adjustCoordinatesForVideoArea:location];
     CGSize videoSize = [self getVideoAreaSize];
     

@@ -19,6 +19,12 @@
 
 @end
 
+extern volatile int gDiagGCMoves;
+extern volatile int gDiagGCDeltaX;
+extern volatile int gDiagUIKitMoves;
+extern volatile int gDiagLastX;
+extern volatile int gDiagLastY;
+
 @interface ControllerSupport : NSObject
 
 -(id) initWithConfig:(StreamConfiguration*)streamConfig delegate:(id<ControllerSupportDelegate>)delegate;
